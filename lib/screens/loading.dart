@@ -1,9 +1,9 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:http/http.dart' as http;
+import 'package:weather/data/my_location.dart';
+import 'package:weather/data/network.dart';
+import 'package:weather/screens/weather_screen.dart';
+
+const apiKey = '1e1a2b8f6d9b5311cd82d001e7b20131';
 
 class Loading extends StatefulWidget {
   const Loading({Key? key}) : super(key: key);
@@ -13,35 +13,42 @@ class Loading extends StatefulWidget {
 }
 
 class _LoadingState extends State<Loading> {
+  late double latitude;
+  late double longitude;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     getLocation();
-    fetchData();
+    // fetchData();
   }
 
   void getLocation() async {
-    try {
-      LocationPermission permission = await Geolocator.requestPermission();
-      Position position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high);
-      debugPrint(position.toString());
-    } catch (e) {
-      debugPrint('internet connection Error');
-    }
-  }
+    MyLocation myLocation = MyLocation();
 
-  void fetchData() async {
-    http.Response response = await http.get(Uri.parse(
-        'https://samples.openweathermap.org/data/2.5/weather?q=London&appid=b1b15e88fa797225412429c1c50c122a1'));
+    await myLocation.getMyCurrentLocation();
+    latitude = myLocation.latitude;
+    longitude = myLocation.longitude;
+    debugPrint('loading.dart >> ' +
+        latitude.toString() +
+        ' / ' +
+        longitude.toString());
+    // https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API key}
+    // https://pro.openweathermap.org/data/2.5/forecast/hourly?lat={lat}&lon={lon}&appid={API key}
+    // https://api.openweathermap.org/data/2.5/onecall?lat={lat}&lon={lon}&exclude={part}&appid={API key}
+// https://api.openweathermap.org/data/2.5/onecall?lat=45.4642033&lon=9.1899817&appid=1e1a2b8f6d9b5311cd82d001e7b20131&units=metric&lang=kr&exclude=minutely
 
-    if (response.statusCode == 200) {
-      String jsonData = response.body;
-      var myJson = jsonDecode(jsonData)['weather'][0]['description'];
-      debugPrint(myJson);
-    } else {}
-    debugPrint(response.body.toString());
+    String baseApi = 'https://api.openweathermap.org/data/2.5/weather';
+    Network network = Network(
+        '$baseApi?lat=${latitude.toString()}&lon=${longitude.toString()}&appid=$apiKey&units=metric');
+    var weatherData = await network.getJsonData();
+    debugPrint(weatherData.toString());
+
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => WeatherScreen(weatherData: weatherData)));
   }
 
   @override
@@ -51,7 +58,6 @@ class _LoadingState extends State<Loading> {
         child: ElevatedButton(
           onPressed: () {
             debugPrint('ElevatedButton clicked~~');
-            fetchData();
           },
           child: const Text(
             'Get my location',
