@@ -25,7 +25,7 @@ class _LoadingState extends State<Loading> {
       body: Center(
         child: ElevatedButton(
           onPressed: () {
-            debugPrint('ElevatedButton clicked');
+          debugPrint('ElevatedButton clicked~~');
             getLocation();
           },
           child: const Text(
