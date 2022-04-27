@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'screens/loading.dart';
-import 'screens/screen_a.dart';
-import 'screens/screen_b.dart';
-import 'screens/screen_c.dart';
 
 void main() {
   runApp(const MyApp());
@@ -20,12 +17,6 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: const Loading(),
-      // initialRoute: '/', // pushNamed
-      // routes: {          // pushNamed
-      //   '/' : (context) => const ScreenA(),
-      //   '/b' : (context) => const ScreenB(),
-      //   '/c' : (context) => const ScreenC(),
-      // },
     );
   }
 }
