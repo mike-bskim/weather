@@ -30,12 +30,10 @@ class _LoadingState extends State<Loading> {
     await myLocation.getMyCurrentLocation();
     latitude = myLocation.latitude;
     longitude = myLocation.longitude;
-    debugPrint('loading.dart >> ' +
-        latitude.toString() +
-        ' / ' +
-        longitude.toString());
+    debugPrint('loading.dart >> ' + latitude.toString() +' / ' +longitude.toString());
+    // https://api.openweathermap.org/data/2.5/weather?lat=45.4642033&lon=9.1899817&appid=1e1a2b8f6d9b5311cd82d001e7b20131
     // https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API key}
-    // https://pro.openweathermap.org/data/2.5/forecast/hourly?lat={lat}&lon={lon}&appid={API key}
+    // https://api.openweathermap.org/data/2.5/forecast/hourly?lat={lat}&lon={lon}&appid={API key}
     // https://api.openweathermap.org/data/2.5/onecall?lat={lat}&lon={lon}&exclude={part}&appid={API key}
 // https://api.openweathermap.org/data/2.5/onecall?lat=45.4642033&lon=9.1899817&appid=1e1a2b8f6d9b5311cd82d001e7b20131&units=metric&lang=kr&exclude=minutely
 

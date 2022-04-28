@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class WeatherScreen extends StatefulWidget {
   final dynamic weatherData;
@@ -12,6 +13,7 @@ class WeatherScreen extends StatefulWidget {
 class _WeatherScreenState extends State<WeatherScreen> {
   late String cityName;
   late int temp;
+  late String currentDate;
 
   @override
   void initState() {
@@ -21,24 +23,19 @@ class _WeatherScreenState extends State<WeatherScreen> {
   }
 
   void updateData(dynamic weatherData) {
+    var dt = weatherData['dt'];
+    var timezone = weatherData['timezone'];
+    var tempTime = DateTime.fromMillisecondsSinceEpoch((dt+timezone) * 1000);
+
     cityName = weatherData['name'];
     temp = weatherData['main']['temp'].round();
+    currentDate = DateFormat('yyyy-MM-dd, HH:mm:ss').format(tempTime);
     debugPrint('cityName[$cityName], temp[${weatherData['main']['temp'].toString()}]');
+    debugPrint('dt[$dt], timezone[$timezone], Date[$currentDate]');
   }
 
   @override
   Widget build(BuildContext context) {
-
-    var _utcTime = DateTime.now().toUtc();
-    debugPrint(_utcTime.toString());
-
-    // Get local time based on UTC time
-    var _localTime = _utcTime.toLocal();
-    debugPrint(_localTime.toString());
-    debugPrint(DateTime.fromMillisecondsSinceEpoch((1651096900+7200) * 1000).toString());
-    debugPrint(DateTime.fromMillisecondsSinceEpoch((1651033070+7200) * 1000).toString());
-    debugPrint(DateTime.fromMillisecondsSinceEpoch(1651096900 * 1000).toString());
-
 
     return Scaffold(
       body: SafeArea(
@@ -47,6 +44,8 @@ class _WeatherScreenState extends State<WeatherScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(cityName, style: const TextStyle(fontSize: 30)),
+              const SizedBox(height: 40),
+              Text(currentDate, style: const TextStyle(fontSize: 30)),
               const SizedBox(height: 40),
               Text(temp.toString(), style: const TextStyle(fontSize: 30)),
             ],
