@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:weather/model/current_weather.dart';
 
 class WeatherScreen extends StatefulWidget {
-  final dynamic weatherData;
+  final CurrentWeather weatherData;
 
   const WeatherScreen({Key? key, required this.weatherData}) : super(key: key);
 
@@ -22,15 +23,15 @@ class _WeatherScreenState extends State<WeatherScreen> {
     updateData(widget.weatherData);
   }
 
-  void updateData(dynamic weatherData) {
-    var dt = weatherData['dt'];
-    var timezone = weatherData['timezone'];
+  void updateData(CurrentWeather weatherData) {
+    var dt = weatherData.dt!;
+    var timezone = weatherData.timezone!;
     var tempTime = DateTime.fromMillisecondsSinceEpoch((dt+timezone) * 1000);
 
-    cityName = weatherData['name'];
-    temp = weatherData['main']['temp'].round();
+    cityName = weatherData.name!;
+    temp = weatherData.main!.temp!.round();
     currentDate = DateFormat('yyyy-MM-dd, HH:mm:ss').format(tempTime);
-    debugPrint('cityName[$cityName], temp[${weatherData['main']['temp'].toString()}]');
+    debugPrint('cityName[$cityName], temp[${weatherData.main!.temp}]');
     debugPrint('dt[$dt], timezone[$timezone], Date[$currentDate]');
   }
 

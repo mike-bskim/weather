@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:weather/data/my_location.dart';
 import 'package:weather/data/network.dart';
+import 'package:weather/model/current_weather.dart';
 import 'package:weather/screens/weather_screen.dart';
 
 const apiKey = '1e1a2b8f6d9b5311cd82d001e7b20131';
@@ -43,10 +44,13 @@ class _LoadingState extends State<Loading> {
     var weatherData = await network.getJsonData();
     debugPrint(weatherData.toString());
 
+    CurrentWeather currentWeather = CurrentWeather.fromJson(weatherData);
+    debugPrint(currentWeather.name);
+
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => WeatherScreen(weatherData: weatherData)));
+            builder: (context) => WeatherScreen(weatherData: currentWeather)));
   }
 
   @override
