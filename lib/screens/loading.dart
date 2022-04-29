@@ -40,7 +40,7 @@ class _LoadingState extends State<Loading> {
 
     String baseApi = 'https://api.openweathermap.org/data/2.5/weather';
     Network network = Network(
-        '$baseApi?lat=${latitude.toString()}&lon=${longitude.toString()}&appid=$apiKey&units=metric');
+        '$baseApi?lat=${latitude.toString()}&lon=${longitude.toString()}&appid=$apiKey&units=metric&lang=kr');
     var weatherData = await network.getJsonData();
     debugPrint(weatherData.toString());
 
