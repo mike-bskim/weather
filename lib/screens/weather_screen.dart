@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+// import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:timer_builder/timer_builder.dart';
+// import 'package:weather/model/air_model.dart';
+import 'package:weather/model/current_air.dart';
 import 'package:weather/model/current_weather.dart';
+import 'package:weather/model/model.dart';
 
 class WeatherScreen extends StatefulWidget {
   final CurrentWeather weatherData;
+  final CurrentAir airData;
 
-  const WeatherScreen({Key? key, required this.weatherData}) : super(key: key);
+  const WeatherScreen(
+      {Key? key, required this.weatherData, required this.airData})
+      : super(key: key);
 
   @override
   State<WeatherScreen> createState() => _WeatherScreenState();
@@ -19,18 +25,29 @@ class _WeatherScreenState extends State<WeatherScreen> {
   late int temp;
   late String currentDate;
   var date = DateTime.now();
+  final Model _model = Model();
+  late Widget airIcon;
+  late Widget airState;
+  double? pm2_5;
+  double? pm10;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    updateData(widget.weatherData);
+    updateData(widget.weatherData, widget.airData);
   }
 
-  void updateData(CurrentWeather weatherData) {
+  void updateData(CurrentWeather weatherData, CurrentAir airData) {
     var dt = weatherData.dt!;
     var timezone = weatherData.timezone!;
     var tempTime = DateTime.fromMillisecondsSinceEpoch((dt + timezone) * 1000);
+    int index = airData.listed![0].main!.aqi!;
+    pm10 = airData.listed![0].components!.pm10!;
+    pm2_5 = airData.listed![0].components!.pm2_5!;
+
+    airIcon = _model.getAirIcon(index);
+    airState = _model.getAirCondition(index);
 
     cityName = weatherData.name!;
     temp = weatherData.main!.temp!.round();
@@ -49,7 +66,6 @@ class _WeatherScreenState extends State<WeatherScreen> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        // title: Text(''),
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
@@ -88,7 +104,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                           children: [
                             const SizedBox(height: 150.0),
                             Text(
-                              'Milano',
+                              '${widget.weatherData.name}',
                               style: GoogleFonts.lato(
                                   fontSize: 30,
                                   fontWeight: FontWeight.bold,
@@ -127,7 +143,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                               ],
                             ),
                           ],
-                        ), //City Name, Time
+                        ), //City Name, Date, Time
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -140,7 +156,9 @@ class _WeatherScreenState extends State<WeatherScreen> {
                             ),
                             Row(
                               children: [
-                                SvgPicture.asset('svg/climacon-sun.svg'),
+                                // SvgPicture.asset('svg/climacon-sun.svg'),
+                                _model.getWeatherIcon(
+                                    widget.weatherData.weather![0].id!),
                                 const SizedBox(
                                   width: 8.0,
                                 ),
@@ -162,7 +180,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                         height: 15.0,
                         thickness: 2.0,
                         color: Colors.white30,
-                      ),
+                      ), //구분자
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -173,27 +191,22 @@ class _WeatherScreenState extends State<WeatherScreen> {
                                 style: GoogleFonts.lato(
                                     fontSize: 14.0, color: Colors.white),
                               ),
-                              const SizedBox(
-                                height: 8,
-                              ),
-                              Image.asset(
-                                'image/bad.png',
-                                width: 37.0,
-                                height: 35.0,
-                              ),
-                              const SizedBox(
-                                height: 8,
-                              ),
-                              Text(
-                                '"매우나쁨"',
-                                style: GoogleFonts.lato(
-                                  fontSize: 14.0,
-                                  color: Colors.black87,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
+                              const SizedBox(height: 8),
+                              // Image.asset('image/bad.png',
+                              //     width: 37.0, height: 35.0),
+                              airIcon,
+                              const SizedBox(height: 8),
+                              airState,
+                              // Text(
+                              //   '"매우나쁨"',
+                              //   style: GoogleFonts.lato(
+                              //     fontSize: 14.0,
+                              //     color: Colors.black87,
+                              //     fontWeight: FontWeight.bold,
+                              //   ),
+                              // ),
                             ],
-                          ),
+                          ), //AQI(대기질지수)
                           Column(
                             children: [
                               Text(
@@ -201,17 +214,13 @@ class _WeatherScreenState extends State<WeatherScreen> {
                                 style: GoogleFonts.lato(
                                     fontSize: 14.0, color: Colors.white),
                               ),
-                              const SizedBox(
-                                height: 8,
-                              ),
+                              const SizedBox(height: 8),
                               Text(
-                                '174.75',
+                                '$pm10',
                                 style: GoogleFonts.lato(
                                     fontSize: 24.0, color: Colors.white),
                               ),
-                              const SizedBox(
-                                height: 8,
-                              ),
+                              const SizedBox(height: 8),
                               Text(
                                 'µg/m3',
                                 style: GoogleFonts.lato(
@@ -221,7 +230,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                                 ),
                               ),
                             ],
-                          ),
+                          ), //미세먼지
                           Column(
                             children: [
                               Text(
@@ -229,17 +238,13 @@ class _WeatherScreenState extends State<WeatherScreen> {
                                 style: GoogleFonts.lato(
                                     fontSize: 14.0, color: Colors.white),
                               ),
-                              const SizedBox(
-                                height: 8,
-                              ),
+                              const SizedBox(height: 8),
                               Text(
-                                '74.75',
+                                '$pm2_5',
                                 style: GoogleFonts.lato(
                                     fontSize: 24.0, color: Colors.white),
                               ),
-                              const SizedBox(
-                                height: 8,
-                              ),
+                              const SizedBox(height: 8),
                               Text(
                                 'µg/m3',
                                 style: GoogleFonts.lato(
@@ -249,7 +254,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                                 ),
                               ),
                             ],
-                          ),
+                          ), //초미세먼지
                         ],
                       ),
                     ],
